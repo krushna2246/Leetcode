@@ -1,0 +1,65 @@
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        int length = nums.length;
+
+        // If the array has fewer than 4 elements, just return the sum of the first three
+        if (length < 4) {
+            return nums[0] + nums[1] + nums[2];
+        }
+
+        // Sort the array to use the two-pointer technique later
+        Arrays.sort(nums);
+
+        // If this largest sum is already <= target, it's the closest sum possible
+        int max_sum = nums[length - 1] + nums[length - 2] + nums[length - 3];
+        if (max_sum <= target) {
+            return max_sum;
+        }
+
+        // closest_dif will store the difference between the target and 
+        // the current closest sum we have found
+        int closest_dif = max_sum;
+
+        for (int i = 0; i < length - 2; ++i) {
+            int left = i + 1, right = length - 1;
+
+            // Update the minimum sum for the current 'i' by picking the closest elements
+            // after sorting.
+           int  min_sum = nums[i] + nums[left] + nums[left + 1];
+            // If the difference (min_sum - target) is greater than or equal to 
+            // the absolute value of closest_dif, it means we cannot find a better sum.
+            // So we return 'target - closest_dif' because closest_dif holds
+            // the difference from an earlier calculation
+            if (min_sum - target >= Math.abs(closest_dif)) {
+                return target - closest_dif;
+            }
+
+            while (left < right) {
+                int current_dif = target - (nums[i] + nums[left] + nums[right]);
+
+                // If current_dif is 0, it means we found an exact match
+                if (current_dif == 0) {
+                    return target;
+                } else if (current_dif > 0) {
+                    // If current_dif is positive, our sum is less than the target,
+                    // so we move left up to increase the sum
+                    ++left;
+                } else {
+                    // Otherwise, our sum is greater than the target,
+                    // so we move right down to decrease the sum
+                    --right;
+                }
+
+                // If this new difference is smaller in absolute terms 
+                // we update closest_dif
+                if (Math.abs(closest_dif) > Math.abs(current_dif)) {
+                    closest_dif = current_dif;
+                }
+            }
+        }
+
+        // After checking all possible triplets, the closest sum is 'target - closest_dif',
+        // because 'closest_dif' = target - (closest sum).
+        return target - closest_dif;
+    }
+}
